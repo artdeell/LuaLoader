@@ -1,10 +1,10 @@
 {
-  "name": "libmodlib.so",
-  "description": "this is a simple demo mod for sml",
+  "name": "liblualoader.so",
+  "description": "This mod loads Lua scripts with access to Canvas APIs",
   "majorVersion":1,
   "minorVersion":0,
   "patchVersion":0,
-  "displayName":"Demo mod",
+  "displayName":"Lua Loader",
   "displaysUI":true,
   "dependencies": [
 

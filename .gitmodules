@@ -1,0 +1,3 @@
+[submodule "app/src/main/cpp/Lua"]
+	path = app/src/main/cpp/Lua
+	url = https://github.com/walterschell/Lua

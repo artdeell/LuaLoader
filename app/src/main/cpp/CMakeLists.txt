@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.19.0)
-set(CIPHER_URL https://github.com/lukas0x1/SML-filehost/releases/latest/download/libciphered.so)
+set(CIPHER_URL https://github.com/lukas0x1/SML-filehost/releases/download/v1.3.0/libciphered.so)
 set(CIPHER_PATH ${CMAKE_BINARY_DIR}/libciphered.so)
 file(DOWNLOAD ${CIPHER_URL} ${CIPHER_PATH} STATUS LIBCIPHER_DOWNLOAD_STATUS)
-
+add_subdirectory(Lua)
 project("userlib")
 
 file(READ ${CMAKE_HOME_DIRECTORY}/config.json MY_JSON_STRING) #reads soname from config
@@ -11,13 +11,17 @@ string(LENGTH ${CUR_NAME} CUR_NAME_LEN)
 string(SUBSTRING ${CUR_NAME} 3 ${CUR_NAME_LEN} CUR_NAME) #ugly but there's no lazy regex support
 string(REPLACE ".so" "" CUR_NAME ${CUR_NAME})
 
-#add_compile_options("-fvisibility=hidden")
-#add_link_options("-s")
+add_compile_options("-fvisibility=hidden")
+add_compile_options("")
+add_link_options("-s")
 
 add_library( # Sets the name of the library.
         ${CUR_NAME}
         SHARED
         main.cpp
+        canvas_api.cpp
+        cipher_api.cpp
+        bindings/imgui_lua_bindings.cpp
         )
 
 set_target_properties(${CUR_NAME}
@@ -31,7 +35,8 @@ find_library(
 target_link_libraries(
         ${CUR_NAME}
         "${CIPHER_PATH}"
-        ${log-lib})
+        ${log-lib}
+        lua_static)
 
 add_custom_command(
         TARGET ${CUR_NAME}

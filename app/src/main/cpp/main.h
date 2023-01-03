@@ -9,7 +9,7 @@ typedef void (*func)();
 void Menu();
 void Init();
 
-extern "C"
+__attribute__ ((visibility ("default")))extern "C"
 func Start(){
     Init();
     return &Menu;
