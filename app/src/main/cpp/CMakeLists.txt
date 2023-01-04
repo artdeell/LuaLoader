@@ -3,6 +3,7 @@ set(CIPHER_URL https://github.com/lukas0x1/SML-filehost/releases/download/v1.3.0
 set(CIPHER_PATH ${CMAKE_BINARY_DIR}/libciphered.so)
 file(DOWNLOAD ${CIPHER_URL} ${CIPHER_PATH} STATUS LIBCIPHER_DOWNLOAD_STATUS)
 add_subdirectory(Lua)
+add_subdirectory(dyncall-1.4)
 project("userlib")
 
 file(READ ${CMAKE_HOME_DIRECTORY}/config.json MY_JSON_STRING) #reads soname from config
