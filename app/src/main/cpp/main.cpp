@@ -12,6 +12,7 @@
 #include "includes/fileselector.h"
 #include "canvas_api.h"
 #include "cipher_api.h"
+#include "dyncall.h"
 lua_State *g_state;
 char status = 0;
 char error_state[4096] = {0};
@@ -30,6 +31,7 @@ static void readfcn(int fd) {
         LoadImguiBindings(state);
         canvas_api_register(state);
         cipher_api_register(state);
+        dyncall_register(state);
         char buf[PATH_MAX];
         snprintf(buf, PATH_MAX-1, "/proc/self/fd/%i", fd);
         bool error = luaL_dofile(state, buf); // stack: ???
@@ -87,6 +89,11 @@ void (*states[])() {
 };
 
 void Menu() {
+    if(ImGui::Button("Test")) {
+        uintptr_t func_ptr = Cipher::get_libBase() + 0x5e4900;
+        void* game_ptr = *(void**)(Cipher::get_libBase() + 0x1741930);
+        ((void(*)(void*, void*, const char*))func_ptr)(nullptr, game_ptr, "CandleSpace");
+    }
     states[status]();
 }
 

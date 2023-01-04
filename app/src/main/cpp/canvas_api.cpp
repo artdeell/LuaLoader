@@ -72,7 +72,7 @@ static int lu_fromhex(lua_State *state) {
     return 1;
 }
 static int lu_add(lua_State *state) {
-    if(lua_isuserdata(state, 1)) {
+    if(lua_islightuserdata(state, 1)) {
         auto ptr = (uintptr_t) lua_touserdata(state, 1);
         ptr += luaL_checkinteger(state, 2);
         lua_pushlightuserdata(state, (void *)ptr);
@@ -85,7 +85,7 @@ static int lu_add(lua_State *state) {
     }
 }
 static int lu_multiply(lua_State *state) {
-    if(lua_isuserdata(state, 1)) {
+    if(lua_islightuserdata(state, 1)) {
         auto ptr = (uintptr_t) lua_touserdata(state, 1);
         ptr *= luaL_checkinteger(state, 2);
         lua_pushlightuserdata(state, (void *)ptr);
@@ -111,13 +111,74 @@ static int lu_divide(lua_State *state) {
         return 2;
     }
 }
-
+static int lu_readptr(lua_State *state) {
+    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
+    lua_pushlightuserdata(state, *(void**)(lua_touserdata(state, 1)));
+    return 1;
+}
+static int lu_readint64(lua_State *state) {
+    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
+    lua_pushinteger(state, (lua_Integer)*(int64_t *)(lua_touserdata(state, 1)));
+    return 1;
+}
+static int lu_readint32(lua_State *state) {
+    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
+    lua_pushinteger(state, (lua_Integer)*(int32_t *)(lua_touserdata(state, 1)));
+    return 1;
+}
+static int lu_readint16(lua_State *state) {
+    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
+    lua_pushinteger(state, (lua_Integer)*(int16_t *)(lua_touserdata(state, 1)));
+    return 1;
+}
+static int lu_readuint8(lua_State *state) {
+    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
+    lua_pushinteger(state, (lua_Integer)*(uint8_t *)(lua_touserdata(state, 1)));
+    return 1;
+}
+static int lu_readfloat(lua_State *state) {
+    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
+    lua_pushnumber(state, (lua_Number)*(float *)(lua_touserdata(state, 1)));
+    return 1;
+}
+static int lu_readdouble(lua_State *state) {
+    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
+    lua_pushnumber(state, (lua_Number)*(double *)(lua_touserdata(state, 1)));
+    return 1;
+}
+static int lu_readstring(lua_State *state) {
+    int argcnt = lua_gettop(state);
+    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
+    const char* ptr = (char*)lua_touserdata(state, 1);
+    if(argcnt == 1) {
+        lua_pushstring(state, ptr);
+        return 1;
+    }
+    if(argcnt == 2) {
+        size_t length = luaL_checkinteger(state, 2);
+        char tempbuffer[length+1];
+        memcpy(tempbuffer, ptr, length);
+        tempbuffer[length] = 0;
+        lua_pushstring(state,tempbuffer);
+        return 1;
+    }
+    luaL_error(state, "args fucked up");
+    return 1;
+}
 static const luaL_Reg lu_utils_functions[] {
-        {"fromhex", lu_fromhex},
-        {"add", lu_add},
-        {"multiply", lu_multiply},
-        {"divide", lu_divide},
-        {nullptr, nullptr}
+        {"fromhex",    lu_fromhex},
+        {"add",        lu_add},
+        {"multiply",   lu_multiply},
+        {"divide",     lu_divide},
+        {"readint64",   lu_readint64},
+        {"readint32",    lu_readint32},
+        {"readint16",  lu_readint32},
+        {"readuint8",   lu_readuint8},
+        {"readfloat",  lu_readfloat},
+        {"readdouble", lu_readdouble},
+        {"readstring", lu_readstring},
+        {"readptr", lu_readptr},
+        {nullptr,      nullptr}
 };
 void canvas_api_register(lua_State *state) {
     lua_newtable(state);

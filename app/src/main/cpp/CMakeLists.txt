@@ -12,9 +12,9 @@ string(LENGTH ${CUR_NAME} CUR_NAME_LEN)
 string(SUBSTRING ${CUR_NAME} 3 ${CUR_NAME_LEN} CUR_NAME) #ugly but there's no lazy regex support
 string(REPLACE ".so" "" CUR_NAME ${CUR_NAME})
 
-add_compile_options("-fvisibility=hidden")
-add_compile_options("")
-add_link_options("-s")
+#add_compile_options("-fvisibility=hidden")
+#add_compile_options("")
+#add_link_options("-s")
 
 add_library( # Sets the name of the library.
         ${CUR_NAME}
@@ -22,6 +22,7 @@ add_library( # Sets the name of the library.
         main.cpp
         canvas_api.cpp
         cipher_api.cpp
+        dyncall.cpp
         bindings/imgui_lua_bindings.cpp
         )
 
@@ -37,7 +38,9 @@ target_link_libraries(
         ${CUR_NAME}
         "${CIPHER_PATH}"
         ${log-lib}
-        lua_static)
+        lua_static
+        dyncall_s
+)
 
 add_custom_command(
         TARGET ${CUR_NAME}
