@@ -111,41 +111,72 @@ static int lu_divide(lua_State *state) {
         return 2;
     }
 }
+
 static int lu_readptr(lua_State *state) {
     luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
     lua_pushlightuserdata(state, *(void**)(lua_touserdata(state, 1)));
     return 1;
 }
-static int lu_readint64(lua_State *state) {
-    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
-    lua_pushinteger(state, (lua_Integer)*(int64_t *)(lua_touserdata(state, 1)));
-    return 1;
+#define writerfunc(TYPENAME, MAX, MIN) \
+static int lu_write##TYPENAME(lua_State *state) { \
+    if(lua_gettop(state) < 2) { \
+        luaL_error(state, "not enough arguments (expected light_userdata ptr. number value)");\
+        return 1; \
+    } \
+    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA); \
+    lua_Integer integer = luaL_checkinteger(state, 2); \
+    if(integer < (MIN) || integer > (MAX)){ \
+        luaL_error(state, "exceeds bounds for type %s", #TYPENAME);   \
+        return 1;\
+    }                              \
+    *((TYPENAME*)lua_touserdata(state, 1)) = (TYPENAME) integer;                              \
+    return 0; \
+    \
 }
-static int lu_readint32(lua_State *state) {
-    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
-    lua_pushinteger(state, (lua_Integer)*(int32_t *)(lua_touserdata(state, 1)));
-    return 1;
+
+#define writerfunc_dec(TYPENAME) \
+static int lu_write##TYPENAME(lua_State *state) { \
+    if(lua_gettop(state) < 2) { \
+        luaL_error(state, "not enough arguments (expected light_userdata ptr. number value)");\
+        return 1; \
+    }                            \
+    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA); \
+    *((TYPENAME*)lua_touserdata(state, 1)) = (TYPENAME) luaL_checknumber(state, 2);           \
+    return 0;\
 }
-static int lu_readint16(lua_State *state) {
-    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
-    lua_pushinteger(state, (lua_Integer)*(int16_t *)(lua_touserdata(state, 1)));
-    return 1;
+
+
+#define readerfunc(TYPENAME) \
+static int lu_read##TYPENAME(lua_State *state) { \
+    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA); \
+    lua_pushinteger(state, (lua_Integer)*(TYPENAME *)(lua_touserdata(state, 1))); \
+return 1; \
 }
-static int lu_readuint8(lua_State *state) {
-    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
-    lua_pushinteger(state, (lua_Integer)*(uint8_t *)(lua_touserdata(state, 1)));
-    return 1;
-}
-static int lu_readfloat(lua_State *state) {
-    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
-    lua_pushnumber(state, (lua_Number)*(float *)(lua_touserdata(state, 1)));
-    return 1;
-}
-static int lu_readdouble(lua_State *state) {
-    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
-    lua_pushnumber(state, (lua_Number)*(double *)(lua_touserdata(state, 1)));
-    return 1;
-}
+
+writerfunc(uint8_t, UINT8_MAX, 0)
+writerfunc(uint16_t, UINT16_MAX, 0)
+writerfunc(uint32_t, UINT32_MAX, 0)
+writerfunc(uint64_t, UINT64_MAX, 0)
+
+writerfunc(int16_t, INT16_MAX, INT16_MIN)
+writerfunc(int32_t, INT32_MAX, INT32_MIN)
+writerfunc(int64_t, INT64_MAX, INT64_MIN)
+
+writerfunc_dec(float)
+writerfunc_dec(double)
+
+readerfunc(uint8_t)
+readerfunc(uint16_t)
+readerfunc(uint32_t)
+readerfunc(uint64_t)
+
+readerfunc(int16_t)
+readerfunc(int32_t)
+readerfunc(int64_t)
+
+readerfunc(float)
+readerfunc(double)
+
 static int lu_readstring(lua_State *state) {
     int argcnt = lua_gettop(state);
     luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
@@ -171,12 +202,24 @@ static const luaL_Reg lu_utils_functions[] {
         {"add",        lu_add},
         {"multiply",   lu_multiply},
         {"divide",     lu_divide},
-        {"readint64",   lu_readint64},
-        {"readint32",    lu_readint32},
-        {"readint16",  lu_readint16},
-        {"readuint8",   lu_readuint8},
+        {"readint64",   lu_readint64_t},
+        {"readint32",    lu_readint32_t},
+        {"readint16",  lu_readint16_t},
+        {"readuint64",   lu_readuint64_t},
+        {"readuint32",    lu_readuint32_t},
+        {"readuint16",  lu_readuint16_t},
+        {"readuint8",   lu_readuint8_t},
         {"readfloat",  lu_readfloat},
         {"readdouble", lu_readdouble},
+        {"writeuint8", lu_writeuint8_t},
+        {"writeuint16", lu_writeuint16_t},
+        {"writeuint32", lu_writeuint32_t},
+        {"writeuint64", lu_writeuint64_t},
+        {"writeint16", lu_writeint16_t},
+        {"writeint32", lu_writeint32_t},
+        {"writeint64", lu_writeint64_t},
+        {"writefloat", lu_writefloat},
+        {"writedouble", lu_writedouble},
         {"readstring", lu_readstring},
         {"readptr", lu_readptr},
         {nullptr,      nullptr}
