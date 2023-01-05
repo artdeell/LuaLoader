@@ -63,6 +63,7 @@ static void st_main() {
     ImGui::TextUnformatted("liblualoader.so, made by artDev\nNo, it does not run scripts for GameGuardian");
     if(error_state[0] != 0) ImGui::TextColored(ImVec4(1,0,0,1), "%s", error_state);
     if(ImGui::Button("Load file")) {
+        error_state[0] = 0;
         if(requestFile("text/plain", &readfcn, false)) {
             status = 1;
         }
