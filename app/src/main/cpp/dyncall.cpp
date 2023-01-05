@@ -4,9 +4,9 @@
 
 #include "dyncall.h"
 
-DCCallVM *g_pCallVM = NULL;
 
 int lua_dodyncall(lua_State *L) {
+    auto *pCallVM = (DCCallVM *) lua_touserdata(L, lua_upvalueindex(1));
 
     void *f;
 
@@ -33,9 +33,9 @@ int lua_dodyncall(lua_State *L) {
 
 
 
-    // dcMode( g_pCallVM, DC_CALL_C_DEFAULT );
+    // dcMode( pCallVM, DC_CALL_C_DEFAULT );
 
-    dcReset(g_pCallVM);
+    dcReset(pCallVM);
 
 
     char ch;
@@ -61,7 +61,7 @@ int lua_dodyncall(lua_State *L) {
 
                 case DC_SIGCHAR_BOOL:
 
-                    dcArgBool(g_pCallVM, (DCbool) luaL_checkinteger(L, p));
+                    dcArgBool(pCallVM, (DCbool) luaL_checkinteger(L, p));
 
                     break;
 
@@ -69,7 +69,7 @@ int lua_dodyncall(lua_State *L) {
 
                 case DC_SIGCHAR_UCHAR:
 
-                    dcArgChar(g_pCallVM, (DCchar) luaL_checkinteger(L, p));
+                    dcArgChar(pCallVM, (DCchar) luaL_checkinteger(L, p));
 
                     break;
 
@@ -77,7 +77,7 @@ int lua_dodyncall(lua_State *L) {
 
                 case DC_SIGCHAR_USHORT:
 
-                    dcArgShort(g_pCallVM, (DCshort) luaL_checkinteger(L, p));
+                    dcArgShort(pCallVM, (DCshort) luaL_checkinteger(L, p));
 
                     break;
 
@@ -85,7 +85,7 @@ int lua_dodyncall(lua_State *L) {
 
                 case DC_SIGCHAR_UINT:
 
-                    dcArgInt(g_pCallVM, (DCint) luaL_checknumber(L, p));
+                    dcArgInt(pCallVM, (DCint) luaL_checknumber(L, p));
 
                     break;
 
@@ -93,7 +93,7 @@ int lua_dodyncall(lua_State *L) {
 
                 case DC_SIGCHAR_ULONG:
 
-                    dcArgLong(g_pCallVM, (DClong) luaL_checknumber(L, p));
+                    dcArgLong(pCallVM, (DClong) luaL_checknumber(L, p));
 
                     break;
 
@@ -101,31 +101,31 @@ int lua_dodyncall(lua_State *L) {
 
                 case DC_SIGCHAR_ULONGLONG:
 
-                    dcArgLongLong(g_pCallVM, (DClonglong) luaL_checknumber(L, p));
+                    dcArgLongLong(pCallVM, (DClonglong) luaL_checknumber(L, p));
 
                     break;
 
                 case DC_SIGCHAR_FLOAT:
 
-                    dcArgFloat(g_pCallVM, (DCfloat) luaL_checknumber(L, p));
+                    dcArgFloat(pCallVM, (DCfloat) luaL_checknumber(L, p));
 
                     break;
 
                 case DC_SIGCHAR_DOUBLE:
 
-                    dcArgDouble(g_pCallVM, (DCdouble) luaL_checknumber(L, p));
+                    dcArgDouble(pCallVM, (DCdouble) luaL_checknumber(L, p));
 
                     break;
 
                 case DC_SIGCHAR_POINTER:
 
-                    dcArgPointer(g_pCallVM, (DCpointer) lua_topointer(L, p));
+                    dcArgPointer(pCallVM, (DCpointer) lua_topointer(L, p));
 
                     break;
 
                 case DC_SIGCHAR_STRING:
 
-                    dcArgPointer(g_pCallVM, (DCpointer) lua_tostring(L, p));
+                    dcArgPointer(pCallVM, (DCpointer) lua_tostring(L, p));
 
                     break;
 
@@ -158,7 +158,7 @@ int lua_dodyncall(lua_State *L) {
 
                         case LUA_TNUMBER:
 
-                            dcArgPointer(g_pCallVM, (DCpointer) (ptrdiff_t) lua_tonumber(L, p));
+                            dcArgPointer(pCallVM, (DCpointer) (ptrdiff_t) lua_tonumber(L, p));
 
                             break;
 
@@ -174,7 +174,7 @@ int lua_dodyncall(lua_State *L) {
 
                                 luaL_error(L, "pointer type mismatch at argument #%d", p);
 
-                            dcArgPointer(g_pCallVM, (DCpointer) lua_touserdata(L, -1));
+                            dcArgPointer(pCallVM, (DCpointer) lua_touserdata(L, -1));
 
                             lua_pop(L, 2);
 
@@ -184,7 +184,7 @@ int lua_dodyncall(lua_State *L) {
 
                         case LUA_TUSERDATA:
 
-                            dcArgPointer(g_pCallVM, (DCpointer) lua_topointer(L, p));
+                            dcArgPointer(pCallVM, (DCpointer) lua_topointer(L, p));
 
                             break;
 
@@ -206,7 +206,7 @@ int lua_dodyncall(lua_State *L) {
 
                     if (lua_isstring(L, p)) {
 
-                        dcArgPointer(g_pCallVM, (DCpointer) lua_tostring(L, p));
+                        dcArgPointer(pCallVM, (DCpointer) lua_tostring(L, p));
 
                         break;
 
@@ -252,13 +252,13 @@ int lua_dodyncall(lua_State *L) {
 
                             luaL_error(L, "pointer type mismatch at argument #%d", p);
 
-                        dcArgPointer(g_pCallVM, (DCpointer) lua_touserdata(L, -1));
+                        dcArgPointer(pCallVM, (DCpointer) lua_touserdata(L, -1));
 
                         lua_pop(L, 2);
 
                     } else
 
-                        dcArgPointer(g_pCallVM, (DCpointer) lua_topointer(L, p));
+                        dcArgPointer(pCallVM, (DCpointer) lua_topointer(L, p));
 
                     ptr = 0;
 
@@ -288,13 +288,13 @@ int lua_dodyncall(lua_State *L) {
 
         case DC_SIGCHAR_VOID:
 
-            dcCallVoid(g_pCallVM, f);
+            dcCallVoid(pCallVM, f);
 
             return 0;
 
         case DC_SIGCHAR_BOOL:
 
-            lua_pushboolean(L, (int) dcCallBool(g_pCallVM, f));
+            lua_pushboolean(L, (int) dcCallBool(pCallVM, f));
 
             break;
 
@@ -302,7 +302,7 @@ int lua_dodyncall(lua_State *L) {
 
         case DC_SIGCHAR_UCHAR:
 
-            lua_pushnumber(L, (lua_Number) (dcCallChar(g_pCallVM, f)));
+            lua_pushnumber(L, (lua_Number) (dcCallChar(pCallVM, f)));
 
             break;
 
@@ -310,7 +310,7 @@ int lua_dodyncall(lua_State *L) {
 
         case DC_SIGCHAR_USHORT:
 
-            lua_pushnumber(L, (lua_Number) (dcCallShort(g_pCallVM, f)));
+            lua_pushnumber(L, (lua_Number) (dcCallShort(pCallVM, f)));
 
             break;
 
@@ -318,7 +318,7 @@ int lua_dodyncall(lua_State *L) {
 
         case DC_SIGCHAR_UINT:
 
-            lua_pushnumber(L, (lua_Number) (dcCallInt(g_pCallVM, f)));
+            lua_pushnumber(L, (lua_Number) (dcCallInt(pCallVM, f)));
 
             break;
 
@@ -326,7 +326,7 @@ int lua_dodyncall(lua_State *L) {
 
         case DC_SIGCHAR_ULONG:
 
-            lua_pushnumber(L, (lua_Number) (dcCallLong(g_pCallVM, f)));
+            lua_pushnumber(L, (lua_Number) (dcCallLong(pCallVM, f)));
 
             break;
 
@@ -334,31 +334,31 @@ int lua_dodyncall(lua_State *L) {
 
         case DC_SIGCHAR_ULONGLONG:
 
-            lua_pushnumber(L, (lua_Number) (dcCallLongLong(g_pCallVM, f)));
+            lua_pushnumber(L, (lua_Number) (dcCallLongLong(pCallVM, f)));
 
             break;
 
         case DC_SIGCHAR_FLOAT:
 
-            lua_pushnumber(L, (lua_Number) dcCallFloat(g_pCallVM, f));
+            lua_pushnumber(L, (lua_Number) dcCallFloat(pCallVM, f));
 
             break;
 
         case DC_SIGCHAR_DOUBLE:
 
-            lua_pushnumber(L, (lua_Number) dcCallDouble(g_pCallVM, f));
+            lua_pushnumber(L, (lua_Number) dcCallDouble(pCallVM, f));
 
             break;
 
         case DC_SIGCHAR_STRING:
 
-            lua_pushstring(L, (const char *) dcCallPointer(g_pCallVM, f));
+            lua_pushstring(L, (const char *) dcCallPointer(pCallVM, f));
 
             break;
 
         case DC_SIGCHAR_POINTER:
 
-            lua_pushlightuserdata(L, dcCallPointer(g_pCallVM, f));
+            lua_pushlightuserdata(L, dcCallPointer(pCallVM, f));
 
             break;
 
@@ -370,13 +370,13 @@ int lua_dodyncall(lua_State *L) {
 
                 case DC_SIGCHAR_CHAR:
 
-                    lua_pushstring(L, (char *) dcCallPointer(g_pCallVM, f));
+                    lua_pushstring(L, (char *) dcCallPointer(pCallVM, f));
 
                     break;
 
                 default:
 
-                    lua_pushlightuserdata(L, dcCallPointer(g_pCallVM, f));
+                    lua_pushlightuserdata(L, dcCallPointer(pCallVM, f));
 
                     break;
 
@@ -395,7 +395,7 @@ int lua_dodyncall(lua_State *L) {
 }
 
 void dyncall_register(lua_State *state) {
-    g_pCallVM = dcNewCallVM(4096);
-    lua_pushcfunction(state, &lua_dodyncall);
+    lua_pushlightuserdata(state, dcNewCallVM(4096));
+    lua_pushcclosure(state, &lua_dodyncall, 1);
     lua_setglobal(state, "dyncall");
 }
