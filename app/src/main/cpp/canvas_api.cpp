@@ -112,11 +112,6 @@ static int lu_divide(lua_State *state) {
     }
 }
 
-static int lu_readptr(lua_State *state) {
-    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
-    lua_pushlightuserdata(state, *(void**)(lua_touserdata(state, 1)));
-    return 1;
-}
 #define writerfunc(TYPENAME, MAX, MIN) \
 static int lu_write##TYPENAME(lua_State *state) { \
     if(lua_gettop(state) < 2) { \
@@ -150,7 +145,7 @@ static int lu_write##TYPENAME(lua_State *state) { \
 static int lu_read##TYPENAME(lua_State *state) { \
     luaL_checktype(state, 1, LUA_TLIGHTUSERDATA); \
     lua_pushinteger(state, (lua_Integer)*(TYPENAME *)(lua_touserdata(state, 1))); \
-return 1; \
+    return 1; \
 }
 
 writerfunc(uint8_t, UINT8_MAX, 0)
@@ -197,6 +192,41 @@ static int lu_readstring(lua_State *state) {
     luaL_error(state, "args fucked up");
     return 2;
 }
+
+static int lu_readptr(lua_State *state) {
+    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
+    lua_pushlightuserdata(state, *(void**)(lua_touserdata(state, 1)));
+    return 1;
+}
+
+static int lu_writestring(lua_State *state) {
+    if(lua_gettop(state) < 2) {
+        luaL_error(state, "not enough arguments (expected light_userdata ptr. number value, boolean include_terminator=true)");
+        return 1;
+    }
+    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
+    char* dest = (char*) lua_touserdata(state, 1);
+    const char* src = luaL_checkstring(state, 2);
+    bool terminated = true;
+    if(lua_type(state, 3) == LUA_TBOOLEAN) terminated = lua_toboolean(state, 3);
+    if(terminated) {
+        strcpy(dest, src);
+    }else {
+        //Shut up Clang-Tidy, it's the whole point
+        memcpy(dest, src, strlen(src));
+    }
+    return 0;
+}
+
+static int lu_writeptr(lua_State *state) {
+    if(lua_gettop(state) < 2) {
+        luaL_error(state, "not enough arguments (expected light_userdata ptr. light_userdata value)");
+        return 1;
+    }
+    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA);
+    luaL_checktype(state, 2, LUA_TLIGHTUSERDATA);
+    *(void**) lua_touserdata(state, 1) = lua_touserdata(state, 2);
+}
 static const luaL_Reg lu_utils_functions[] {
         {"fromhex",    lu_fromhex},
         {"add",        lu_add},
@@ -211,6 +241,8 @@ static const luaL_Reg lu_utils_functions[] {
         {"readuint8",   lu_readuint8_t},
         {"readfloat",  lu_readfloat},
         {"readdouble", lu_readdouble},
+        {"readstring", lu_readstring},
+        {"readptr", lu_readptr},
         {"writeuint8", lu_writeuint8_t},
         {"writeuint16", lu_writeuint16_t},
         {"writeuint32", lu_writeuint32_t},
@@ -220,8 +252,8 @@ static const luaL_Reg lu_utils_functions[] {
         {"writeint64", lu_writeint64_t},
         {"writefloat", lu_writefloat},
         {"writedouble", lu_writedouble},
-        {"readstring", lu_readstring},
-        {"readptr", lu_readptr},
+        {"writeptr", lu_writeptr},
+        {"writesting", lu_writestring},
         {nullptr,      nullptr}
 };
 void canvas_api_register(lua_State *state) {

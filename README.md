@@ -43,9 +43,10 @@ returns light userdata, equal to `data`*`x`
 data - source light userdata  
 x - the integer to divide light userdata by  
 returns light userdata, equal to `data`/`x`   
-### lu.readint<8/16/32/64>()
-`integer lu.readint<8/16/32/64>(light_userdata where_from)`  
-where_from - the light userdata from which the int<8/16/32/64> will be read  
+### lu.read<u>int<8/16/32/64>()
+`integer lu.read<u>int<8/16/32/64>(light_userdata where_from)`  
+NOTE: there are no functions to read the `int8` data type since its pointless  
+where_from - the light userdata from which the <u>int<8/16/32/64> will be read  
 returns an integer read from memory that `where_from` points to  
 ### lu.read<float/double>()
 `number lu.read<float/double>(light_userdata where_from)`  
@@ -63,6 +64,23 @@ returns the string corresponding to the null terminated C string read from memor
 where_from - the light userdata from which the string will be read  
 length - how much characters needs to be read into the string  
 returns the string corresponding to bytes starting from `where_from` and ending at `where_from+length` (unless a null character preceeds `where_from+length`)  
+### lu.write<u>int<8/16/32/64>()
+`void lu.write<u>int<8/16/32/64>(light_userdata where_to, integer value)`  
+NOTE: there are no functions to write the `int8` data type since its pointless  
+where_to - the light userdata to where the <u>int<8/16/32/64> will be written  
+value - the value that will be written  
+returns nothing, writes a <u>int<8/16/32/64> to the memory pointed by `where_to`
+### lu.write<float/double>()
+`void lu.write<float/double>(light_userdata where_to, number value)`
+where_to - the light userdata to where the float or double will be written
+value - the value that will be written  
+returns nothing, writes a float or double to the memory pointed by `where_to`
+### lu.writestring()
+`void lu.writestring(light_userdata where_to, string value, boolean null_terminated=true)`
+where_to - the light userdata to where the string will be written
+value - the string that will be written
+null_terminated - true if the written string needs to have a null terminator on the end, false otherwise
+returns nothing, writes a string to the memory pointed by `where_to` with or without the null terminator depending on the null_terminated argument
 ## cipherpatch
 `cipherpatch` is a generic and relatively safe way to patch the game library code
 ### cipherpatch.new()
