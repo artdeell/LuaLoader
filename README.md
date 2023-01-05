@@ -46,7 +46,7 @@ returns light userdata, equal to `data`/`x`
 ### lu.read(u)int<8/16/32/64>()
 `integer lu.read<u>int<8/16/32/64>(light_userdata where_from)`  
 NOTE: there are no functions to read the `int8` data type since its pointless  
-where_from - the light userdata from which the <u>int<8/16/32/64> will be read  
+where_from - the light userdata from which the (u)int<8/16/32/64> will be read  
 returns an integer read from memory that `where_from` points to  
 ### lu.read<float/double>()
 `number lu.read<float/double>(light_userdata where_from)`  
@@ -67,7 +67,7 @@ returns the string corresponding to bytes starting from `where_from` and ending 
 ### lu.write(u)int<8/16/32/64>()
 `void lu.write<u>int<8/16/32/64>(light_userdata where_to, integer value)`  
 NOTE: there are no functions to write the `int8` data type since its pointless  
-where_to - the light userdata to where the <u>int<8/16/32/64> will be written  
+where_to - the light userdata to where the (u)int<8/16/32/64> will be written  
 value - the value that will be written  
 returns nothing, writes a <u>int<8/16/32/64> to the memory pointed by `where_to`
 ### lu.write<float/double>()
