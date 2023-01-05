@@ -162,8 +162,9 @@ static int lu_readstring(lua_State *state) {
         lua_pushstring(state,tempbuffer);
         return 1;
     }
+    lua_pushnil(state);
     luaL_error(state, "args fucked up");
-    return 1;
+    return 2;
 }
 static const luaL_Reg lu_utils_functions[] {
         {"fromhex",    lu_fromhex},
@@ -172,7 +173,7 @@ static const luaL_Reg lu_utils_functions[] {
         {"divide",     lu_divide},
         {"readint64",   lu_readint64},
         {"readint32",    lu_readint32},
-        {"readint16",  lu_readint32},
+        {"readint16",  lu_readint16},
         {"readuint8",   lu_readuint8},
         {"readfloat",  lu_readfloat},
         {"readdouble", lu_readdouble},
