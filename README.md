@@ -43,7 +43,7 @@ returns light userdata, equal to `data`*`x`
 data - source light userdata  
 x - the integer to divide light userdata by  
 returns light userdata, equal to `data`/`x`   
-### lu.read<u>int<8/16/32/64>()
+### lu.read(u)int<8/16/32/64>()
 `integer lu.read<u>int<8/16/32/64>(light_userdata where_from)`  
 NOTE: there are no functions to read the `int8` data type since its pointless  
 where_from - the light userdata from which the <u>int<8/16/32/64> will be read  
@@ -64,7 +64,7 @@ returns the string corresponding to the null terminated C string read from memor
 where_from - the light userdata from which the string will be read  
 length - how much characters needs to be read into the string  
 returns the string corresponding to bytes starting from `where_from` and ending at `where_from+length` (unless a null character preceeds `where_from+length`)  
-### lu.write<u>int<8/16/32/64>()
+### lu.write(u)int<8/16/32/64>()
 `void lu.write<u>int<8/16/32/64>(light_userdata where_to, integer value)`  
 NOTE: there are no functions to write the `int8` data type since its pointless  
 where_to - the light userdata to where the <u>int<8/16/32/64> will be written  
