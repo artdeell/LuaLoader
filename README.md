@@ -71,16 +71,16 @@ where_to - the light userdata to where the (u)int<8/16/32/64> will be written
 value - the value that will be written  
 returns nothing, writes a <u>int<8/16/32/64> to the memory pointed by `where_to`
 ### lu.write<float/double>()
-`void lu.write<float/double>(light_userdata where_to, number value)`
-where_to - the light userdata to where the float or double will be written
+`void lu.write<float/double>(light_userdata where_to, number value)`  
+where_to - the light userdata to where the float or double will be written  
 value - the value that will be written  
-returns nothing, writes a float or double to the memory pointed by `where_to`
+returns nothing, writes a float or double to the memory pointed by `where_to`  
 ### lu.writestring()
-`void lu.writestring(light_userdata where_to, string value, boolean null_terminated=true)`
-where_to - the light userdata to where the string will be written
-value - the string that will be written
-null_terminated - true if the written string needs to have a null terminator on the end, false otherwise
-returns nothing, writes a string to the memory pointed by `where_to` with or without the null terminator depending on the null_terminated argument
+`void lu.writestring(light_userdata where_to, string value, boolean null_terminated=true)`  
+where_to - the light userdata to where the string will be written  
+value - the string that will be written  
+null_terminated - true if the written string needs to have a null terminator on the end, false otherwise  
+returns nothing, writes a string to the memory pointed by `where_to` with or without the null terminator depending on the null_terminated argument  
 ## cipherpatch
 `cipherpatch` is a generic and relatively safe way to patch the game library code
 ### cipherpatch.new()
