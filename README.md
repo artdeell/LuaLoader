@@ -82,9 +82,10 @@ returns nothing, sets the address where the byte(s) would be replaced
 symbol - the symbol at the address of which the byte(s) would be replaced  
 returns nothing, sets the address where the byte(s) would be replaced  
 `void CipherPatch:set_Address(string pattern, string mask)` NOTE: USE AT YOUR OWN RISK! This function uses an irrelibale KittyMemory::find_from_lib API which is not guaranteed to fully scan the library  
+  
 pattern - the pattern, consisting of raw characters  
 mask - the mask for the pattern  
-Uses the same pattern scan algorithm as CipherScan to find the address  
+Uses the same pattern scan algorithm as [CipherScan](#ciphercipherscan) to find the address  
 returns nothing, sets the address where the byte(s) would be replaced to the result of the pattern scan  
 ### CipherPatch:set_libName()
 `void CipherPatch:set_libName(string name)`  
@@ -102,3 +103,11 @@ returns nothing, applies the patch
 ### CipherPatch:Restore()
 `void CipherPatch:Restore()`  
 returns nothing, reverts the patch  
+## dyncall
+dyncall allows you to call any C(++) function by its pointer, if you know the arguments and the return value
+### dyncall()
+`mixed dyncall(<cfunction/number/light_userdata> function_ptr, string signature, ...)`  
+function_ptr - the pointer to the function that needs to be called  
+signature - a dyncall function signature, as described [in the dyncall manual](https://dyncall.org/docs/manual/manualse4.html)  
+... - arguments for the function that needs to be called, as specified in the dyncall signature  
+returns the result of the function call, with the type dictated by the dyncall signature  
