@@ -148,6 +148,13 @@ static int lu_read##TYPENAME(lua_State *state) { \
     return 1; \
 }
 
+#define readerfunc_dec(TYPENAME) \
+static int lu_read##TYPENAME(lua_State *state) { \
+    luaL_checktype(state, 1, LUA_TLIGHTUSERDATA); \
+    lua_pushnumber(state, (lua_Number)*(TYPENAME *)(lua_touserdata(state, 1))); \
+    return 1; \
+}
+
 writerfunc(uint8_t, UINT8_MAX, 0)
 writerfunc(uint16_t, UINT16_MAX, 0)
 writerfunc(uint32_t, UINT32_MAX, 0)
@@ -169,8 +176,8 @@ readerfunc(int16_t)
 readerfunc(int32_t)
 readerfunc(int64_t)
 
-readerfunc(float)
-readerfunc(double)
+readerfunc_dec(float)
+readerfunc_dec(double)
 
 static int lu_readstring(lua_State *state) {
     int argcnt = lua_gettop(state);

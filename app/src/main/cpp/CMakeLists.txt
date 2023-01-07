@@ -23,6 +23,7 @@ add_library( # Sets the name of the library.
         canvas_api.cpp
         cipher_api.cpp
         dyncall.cpp
+        malloc_search.cpp
         bindings/imgui_lua_bindings.cpp
         )
 

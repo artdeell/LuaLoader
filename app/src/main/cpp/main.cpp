@@ -13,11 +13,17 @@
 #include "canvas_api.h"
 #include "cipher_api.h"
 #include "dyncall.h"
+#include "malloc_search.h"
 lua_State *g_state;
 char status = 0;
 char error_state[4096] = {0};
 
 #define TUMBLE(str) {status = 0; strncpy(error_state, str, 4095);}
+
+static int exit(lua_State *state) {
+    status = 0;
+    return 0;
+}
 
 static void readfcn(int fd) {
     if(fd != -1) {
@@ -32,6 +38,9 @@ static void readfcn(int fd) {
         canvas_api_register(state);
         cipher_api_register(state);
         dyncall_register(state);
+        register_mallocsearch(state);
+        lua_pushcfunction(state, exit);
+        lua_setglobal(state, "exit");
         char buf[PATH_MAX];
         snprintf(buf, PATH_MAX-1, "/proc/self/fd/%i", fd);
         bool error = luaL_dofile(state, buf); // stack: ???
@@ -60,6 +69,10 @@ static void readfcn(int fd) {
 }
 
 static void st_main() {
+    if(g_state != nullptr) {
+        lua_close(g_state);
+        g_state = nullptr;
+    }
     ImGui::TextUnformatted("liblualoader.so, made by artDev\nNo, it does not run scripts for GameGuardian");
     if(error_state[0] != 0) ImGui::TextColored(ImVec4(1,0,0,1), "%s", error_state);
     if(ImGui::Button("Load file")) {
@@ -79,8 +92,6 @@ static void st_execscript() {
     auto errcode = lua_pcall(g_state, 0, 0, 0);
     if(errcode != 0) {
         snprintf(error_state, 4095, "error during drawfunc: %s", lua_tostring(g_state, -1));
-        lua_close(g_state);
-        g_state = nullptr;
         status = 0;
     }
 }
@@ -90,11 +101,6 @@ void (*states[])() {
 };
 
 void Menu() {
-    if(ImGui::Button("Test")) {
-        uintptr_t func_ptr = Cipher::get_libBase() + 0x5e4900;
-        void* game_ptr = *(void**)(Cipher::get_libBase() + 0x1741930);
-        ((void(*)(void*, void*, const char*))func_ptr)(nullptr, game_ptr, "CandleSpace");
-    }
     states[status]();
 }
 
